@@ -16,7 +16,7 @@ class DashboardView(ListView):
         context['pending_results'] = Result.objects.filter(pending=0, sector=self.request.user.user_profile.sector)
         context['sectors'] = Sector.objects.all()
         # context['results_by_kpi'] = Result.objects.all().filter(kpi_id=self.kwargs['kpi_id'])
-        context['achieved_total'] = Result.objects.values('kpi__name', 'kpi_id').annotate(achieved=Sum('achieved'))\
+        context['achieved_total'] = Umuryango.objects.values('kpi__name', 'kpi_id').annotate(achieved=Sum('achieved'))\
                                                                                 .annotate(pending=Sum('pending'))\
                                                                                 .annotate(ibisigaye=F('pending') - F('achieved'))
 

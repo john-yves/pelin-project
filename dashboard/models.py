@@ -86,21 +86,17 @@ class Umuryango(models.Model):
     number_of_member = models.PositiveIntegerField()
     icyiciro = models.PositiveIntegerField()
     irangamuntu = models.BigIntegerField()
-    kpi = models.ForeignKey(KPI, on_delete=models.CASCADE, default=None)
+    kpi = models.ForeignKey(KPI, on_delete=models.CASCADE, default=None, related_name='bbbbbb')
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     cell = models.ForeignKey(Cell, on_delete=models.CASCADE)
     umudugudu = models.ForeignKey(Village, on_delete=models.CASCADE, related_name='village_cell')
     status = models.BooleanField(default=False)
-    achieved = models.IntegerField(default=0, null=True, blank=True)
-    pending = models.IntegerField(default=0, null=True, blank=True)
+
 
     def __str__(self):
         return self.name
 
 ###################################
-
-
-
 
 
 

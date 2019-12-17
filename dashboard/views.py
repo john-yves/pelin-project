@@ -1,3 +1,4 @@
+from django.db import models
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from .models import Result, Sector, KPI, Umuryango
@@ -16,13 +17,20 @@ class DashboardView(ListView):
         context['pending_results'] = Result.objects.filter(pending=0, sector=self.request.user.user_profile.sector)
         context['sectors'] = Sector.objects.all()
         # context['results_by_kpi'] = Result.objects.all().filter(kpi_id=self.kwargs['kpi_id'])
-        context['achieved_total'] = Umuryango.objects.values('kpi__name', 'kpi_id').annotate(achieved=Sum('achieved'))\
-                                                                                .annotate(pending=Sum('pending'))\
-                                                                                .annotate(ibisigaye=F('pending') - F('achieved'))
+        context['achieved_total'] = Umuryango.objects.values('kpi__name', 'kpi_id').annotate(status=Sum('status'))
 
         context['seed_sector'] = Result.objects.values('kpi__name', 'kpi_id').annotate(achieved=Sum('achieved'))\
                                                                              .annotate(pending=Sum('pending'))\
                                                                              .filter(sector=self.request.user.user_profile.sector)
+
+        context['ibyakozwe'] = Umuryango.objects.filter(status=True).count()
+        context['ibisigaye'] = Umuryango.objects.filter(status=False).count()
+
+
+        context['ibyakozw'] = Umuryango.objects.filter(status=True).annotate(tauf=models.Count('status'))
+        context['ibisigay'] = Umuryango.objects.filter(status=False)
+
+
 
 
 
@@ -47,8 +55,8 @@ class Ibyakozwe(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(Ibyakozwe, self).get_context_data(**kwargs)
-        context['ibyakozwe'] = Umuryango.objects.filter(status="True")
-        context['ibisigaye'] = Umuryango.objects.filter(status="False")
+        context['ibyakozwe'] = Umuryango.objects.filter(status="True").filter(kpi_id=self.kwargs['pk'])
+        context['ibisigaye'] = Umuryango.objects.filter(status="False").filter(kpi_id=self.kwargs['pk'])
 
         return context
 

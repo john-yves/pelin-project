@@ -9,26 +9,31 @@ class DashboardView(ListView):
     model = Result
     template_name = "dashboard/dashboard.html"
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, *args, object_list=None, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         context['kpis'] = KPI.objects.all()
         context['results'] = Result.objects.filter(sector=self.request.user.user_profile.sector)
         context['achieved_results'] = Result.objects.filter(achieved=0, sector=self.request.user.user_profile.sector)
         context['pending_results'] = Result.objects.filter(pending=0, sector=self.request.user.user_profile.sector)
         context['sectors'] = Sector.objects.all()
-        # context['results_by_kpi'] = Result.objects.all().filter(kpi_id=self.kwargs['kpi_id'])
-        context['achieved_total'] = Umuryango.objects.values('kpi__name', 'kpi_id').annotate(status=Sum('status'))
 
-        context['seed_sector'] = Result.objects.values('kpi__name', 'kpi_id').annotate(achieved=Sum('achieved'))\
-                                                                             .annotate(pending=Sum('pending'))\
-                                                                             .filter(sector=self.request.user.user_profile.sector)
+        context['achieved_total'] = Umuryango.objects.values('kpi__name', 'kpi_id') \
+                                                     .annotate(achieved=Sum('achieved')) \
+                                                     .annotate(target=Sum('target'))
 
-        context['ibyakozwe'] = Umuryango.objects.filter(status=True).count()
-        context['ibisigaye'] = Umuryango.objects.filter(status=False).count()
+        context['achieved_sector'] = Umuryango.objects.values('kpi__name', 'kpi_id')\
+                                                  .annotate(achieved=Sum('achieved'))\
+                                                  .annotate(target=Sum('target'))\
+                                                  .filter(sector=self.request.user.user_profile.sector)
 
 
-        context['ibyakozw'] = Umuryango.objects.filter(status=True).annotate(tauf=models.Count('status'))
-        context['ibisigay'] = Umuryango.objects.filter(status=False)
+
+        # context['ibisigay'] = Umuryango.objects.filter(kpi__name='kpi_name').count()
+        # Entry.objects.filter(authors__name=F('blog__name'))
+        # context['ibisigaye'] = Umuryango.objects.filter(kpi__name=F('kpi1__name')).filter(status=True).distinct().count()
+        # context['ibyakozw'] = Umuryango.objects.filter(status="True").filter(kpi__name=self.kwargs['kpi__name']).count()
+        # context['ibyakozw'] = Umuryango.objects.values('kpi__name', 'kpi_id').filter(kpi__name=F('kpi__name'), status=True).annotate(status=Sum('status'))
+        # context['ibisi'] = Umuryango.objects.values('kpi__name', 'kpi_id').filter(kpi__name='kpi__name', status=False).annotate(Count('status',distinct=True))
 
 
 
@@ -55,8 +60,12 @@ class Ibyakozwe(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(Ibyakozwe, self).get_context_data(**kwargs)
-        context['ibyakozwe'] = Umuryango.objects.filter(status="True").filter(kpi_id=self.kwargs['pk'])
-        context['ibisigaye'] = Umuryango.objects.filter(status="False").filter(kpi_id=self.kwargs['pk'])
+        context['ibyakozwe'] = Umuryango.objects.filter(achieved=1).filter(kpi_id=self.kwargs['pk'])
+        context['ibisigaye'] = Umuryango.objects.filter(achieved=0).filter(kpi_id=self.kwargs['pk'])
+
+        context['ibyakozwe_sector'] = Umuryango.objects.filter(achieved=1, sector=self.request.user.user_profile.sector).filter(kpi_id=self.kwargs['pk'])
+        context['ibisigaye_sector'] = Umuryango.objects.filter(achieved=0, sector=self.request.user.user_profile.sector).filter(kpi_id=self.kwargs['pk'])
 
         return context
+
 

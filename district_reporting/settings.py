@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # third party
     'rest_framework',
     'crispy_forms',
+    'mathfilters',
 ]
 
 MIDDLEWARE = [

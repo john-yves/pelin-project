@@ -73,6 +73,7 @@ class Village(models.Model):
 class KPI(models.Model):
     name = models.CharField(max_length=200)
 
+
     class Meta:
         verbose_name = "KPI"
         verbose_name_plural = "KPIs"
@@ -86,11 +87,14 @@ class Umuryango(models.Model):
     number_of_member = models.PositiveIntegerField()
     icyiciro = models.PositiveIntegerField()
     irangamuntu = models.BigIntegerField()
-    kpi = models.ForeignKey(KPI, on_delete=models.CASCADE, default=None, related_name='bbbbbb')
+    kpi = models.ForeignKey(KPI, on_delete=models.CASCADE, default=None, related_name='kpi_name')
+    target = models.PositiveIntegerField(default=1)
+    achieved = models.PositiveIntegerField(default=0, max_length=1)
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     cell = models.ForeignKey(Cell, on_delete=models.CASCADE)
     umudugudu = models.ForeignKey(Village, on_delete=models.CASCADE, related_name='village_cell')
-    status = models.BooleanField(default=False)
+
+
 
 
     def __str__(self):

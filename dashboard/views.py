@@ -1,20 +1,20 @@
 from django.db import models
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from .models import Result, Sector, KPI, Umuryango
+from .models import Sector, KPI, Umuryango
 from django.db.models import Sum, Count, F
 
 
 class DashboardView(ListView):
-    model = Result
+    model = Umuryango
     template_name = "dashboard/dashboard.html"
 
     def get_context_data(self, *args, object_list=None, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         context['kpis'] = KPI.objects.all()
-        context['results'] = Result.objects.filter(sector=self.request.user.user_profile.sector)
-        context['achieved_results'] = Result.objects.filter(achieved=0, sector=self.request.user.user_profile.sector)
-        context['pending_results'] = Result.objects.filter(pending=0, sector=self.request.user.user_profile.sector)
+        # context['results'] = Result.objects.filter(sector=self.request.user.user_profile.sector)
+        # context['achieved_results'] = Result.objects.filter(achieved=0, sector=self.request.user.user_profile.sector)
+        # context['pending_results'] = Result.objects.filter(pending=0, sector=self.request.user.user_profile.sector)
         context['sectors'] = Sector.objects.all()
 
         context['achieved_total'] = Umuryango.objects.values('kpi__name', 'kpi_id') \
@@ -27,7 +27,7 @@ class DashboardView(ListView):
                                                   .filter(sector=self.request.user.user_profile.sector)
 
 
-
+        # context['kpizose'] = Umuryang.objects.values('kpi__name', 'status').filter(status=False).annotate(Count('status'))
         # context['ibisigay'] = Umuryango.objects.filter(kpi__name='kpi_name').count()
         # Entry.objects.filter(authors__name=F('blog__name'))
         # context['ibisigaye'] = Umuryango.objects.filter(kpi__name=F('kpi1__name')).filter(status=True).distinct().count()
@@ -48,9 +48,9 @@ class KPIDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(KPIDetailView, self).get_context_data(**kwargs)
-        context['performance_kpi_sectors'] = Result.objects.filter(kpi_id=self.kwargs['pk'])
+        # context['performance_kpi_sectors'] = Result.objects.filter(kpi_id=self.kwargs['pk'])
         context['kpis'] = KPI.objects.all()
-        context['current_kpi'] = Result.objects.filter(kpi_id=self.kwargs['pk']).values_list('kpi__name').distinct()
+        # context['current_kpi'] = Result.objects.filter(kpi_id=self.kwargs['pk']).values_list('kpi__name').distinct()
         return context
 
 

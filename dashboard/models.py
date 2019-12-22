@@ -83,43 +83,34 @@ class KPI(models.Model):
 
 
 class Umuryango(models.Model):
+    PENDING = 0
+    ACHIEVED = 1
+    R_CHOICES = (
+        (PENDING, 0), (ACHIEVED, 1))
+
+    TARGET = 1
+    R1_CHOICES = ((TARGET, 1), (TARGET, 1))
+
     name = models.CharField(max_length=200)
     number_of_member = models.PositiveIntegerField()
     icyiciro = models.PositiveIntegerField()
     irangamuntu = models.BigIntegerField()
     kpi = models.ForeignKey(KPI, on_delete=models.CASCADE, default=None, related_name='kpi_name')
-    target = models.PositiveIntegerField(default=1)
-    achieved = models.PositiveIntegerField(default=0, max_length=1)
+    target = models.PositiveSmallIntegerField(choices=R1_CHOICES, default=1)
+    achieved = models.PositiveSmallIntegerField(choices=R_CHOICES, default=0)
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     cell = models.ForeignKey(Cell, on_delete=models.CASCADE)
     umudugudu = models.ForeignKey(Village, on_delete=models.CASCADE, related_name='village_cell')
 
 
-
-
     def __str__(self):
         return self.name
 
-###################################
 
-
-
-class Result(models.Model):
-    achieved = models.PositiveIntegerField()
-    pending = models.PositiveIntegerField()
-    ibisigaye = models.PositiveIntegerField(default=0)
-    kpi = models.ForeignKey(KPI, on_delete=models.CASCADE, related_name='kpi_results')
-    sector = models.ForeignKey(Sector, on_delete=models.CASCADE, related_name='sector_results')
-    date_added = models.DateTimeField(auto_now=True)
-    year = models.PositiveIntegerField(default=current_year())
-
-    class Meta:
-        verbose_name='Result'
-        verbose_name_plural='Results'
-        unique_together = ('kpi','year','sector')
-
-    def __str__(self):
-        return str(self.id)
+# class Umuryang(models.Model):
+#     name = models.CharField(max_length=200)
+#     kpi = models.ForeignKey(KPI, on_delete=models.CASCADE)
+#     status = models.BooleanField(default=False)
 
 
 

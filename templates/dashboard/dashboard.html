@@ -22,7 +22,7 @@
                   <div class="overdue card">
                     <div class="card-body">
                         <h5>{{foo.kpi__name}} &nbsp; &nbsp; <small class="font-weight-bold mr-2"></small>
-                            <small class="font-weight-bold"><a href="">View District Status</a></small>
+                            <small class="font-weight-bold"><a href="{% url 'kpi_charts'%}">View District Status</a></small>
                         </h5>
                         <div class="statistics col-lg-12 col-12">
                             <div class="statistic d-flex justify-content-between bg-white has-shadow py-2">
@@ -67,7 +67,7 @@
                   <div class="overdue card">
                       <div class="card-body">
                         <h5>{{foo.kpi__name}} &nbsp; &nbsp; <small class="font-weight-bold mr-2"></small>
-                            <small class="font-weight-bold"><a href="#graph sector">View Graph</a></small>
+                            <small class="font-weight-bold"><a href="{% url 'sector_charts'%}">View Graph</a></small>
                         </h5>
                         <div class="statistics col-lg-12 col-12">
                             <div class="statistic d-flex justify-content-between bg-white has-shadow py-2">
@@ -90,6 +90,12 @@
                      </div>
                   </div>
               </div>
+           {% endfor %}
+           {% for i in kpizose %}
+           {{i.target}}
+           {% endfor %}<br>
+           {% for a in achievedzose %}
+           {{a.achiev}}
            {% endfor %}
       {% else %}
 

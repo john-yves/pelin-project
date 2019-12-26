@@ -1,8 +1,8 @@
 from django.db import models
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView,View
 from .models import Sector, KPI, Umuryango
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F,Q
 
 
 class DashboardView(ListView):
@@ -27,7 +27,8 @@ class DashboardView(ListView):
                                                   .filter(sector=self.request.user.user_profile.sector)
 
 
-        # context['kpizose'] = Umuryang.objects.values('kpi__name', 'status').filter(status=False).annotate(Count('status'))
+        context['kpizose'] = Umuryango.objects.values('kpi__name', 'kpi_id').annotate(target=Sum('target')).filter(sector=self.request.user.user_profile.sector)
+        context['achievedzose'] = Umuryango.objects.values('kpi__name', 'kpi_id').annotate(achiev=Sum('achieved'))
         # context['ibisigay'] = Umuryango.objects.filter(kpi__name='kpi_name').count()
         # Entry.objects.filter(authors__name=F('blog__name'))
         # context['ibisigaye'] = Umuryango.objects.filter(kpi__name=F('kpi1__name')).filter(status=True).distinct().count()
@@ -65,7 +66,17 @@ class Ibyakozwe(ListView):
 
         context['ibyakozwe_sector'] = Umuryango.objects.filter(achieved=1, sector=self.request.user.user_profile.sector).filter(kpi_id=self.kwargs['pk'])
         context['ibisigaye_sector'] = Umuryango.objects.filter(achieved=0, sector=self.request.user.user_profile.sector).filter(kpi_id=self.kwargs['pk'])
+        
 
         return context
 
+class District_chartView(View):
+    def get(self,request):
+        dataset = Umuryango.objects.values('kpi__name', 'sector__name').annotate(targ=Sum('target')).annotate(achiev=Sum('achieved')).order_by('target')
+        return render(request,'dashboard/kpi_chart.html',{'dataset':dataset})
 
+
+class Sector_chartView(View):
+    def get(self,request):
+        dataset = Umuryango.objects.values('kpi__name').annotate(targ=Sum('target')).annotate(achiev=Sum('achieved')).filter(sector=self.request.user.user_profile.sector).order_by('target')
+        return render(request,'dashboard/kpi_chart.html',{'dataset':dataset})
